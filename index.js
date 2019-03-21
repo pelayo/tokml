@@ -24,40 +24,11 @@ module.exports = function tokml(geojson, options) {
 
 function feature(options, styleHashesArray) {
     return function(_) {
-        if (!_.properties || !geometry.valid(_.geometry)) return '';
+        if (!geometry.valid(_.geometry)) return '';
         var geometryString = geometry.any(_.geometry);
         if (!geometryString) return '';
-        
-        var styleDefinition = '',
-            styleReference = '';
-        if (options.simplestyle) {
-            var styleHash = hashStyle(_.properties);
-            if (styleHash) {
-                if (geometry.isPoint(_.geometry) && hasMarkerStyle(_.properties)) {
-                    if (styleHashesArray.indexOf(styleHash) === -1) {
-                        styleDefinition = markerStyle(_.properties, styleHash);
-                        styleHashesArray.push(styleHash);
-                    }
-                    styleReference = tag('styleUrl', '#' + styleHash);
-                } else if ((geometry.isPolygon(_.geometry) || geometry.isLine(_.geometry)) && 
-                    hasPolygonAndLineStyle(_.properties)) {
-                    if (styleHashesArray.indexOf(styleHash) === -1) {
-                        styleDefinition = polygonAndLineStyle(_.properties, styleHash);
-                        styleHashesArray.push(styleHash);
-                    }
-                    styleReference = tag('styleUrl', '#' + styleHash);
-                }
-                // Note that style of GeometryCollection / MultiGeometry is not supported
-            }
-        }
-        
-        return styleDefinition + tag('Placemark',
-            name(_.properties, options) +
-            description(_.properties, options) +
-            extendeddata(_.properties) +
-            timestamp(_.properties, options) +
-            geometryString +
-            styleReference);
+      
+        return tag('Placemark',geometryString);
     };
 }
 
